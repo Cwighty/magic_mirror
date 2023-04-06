@@ -2,7 +2,7 @@ import pyaudio
 import wave
 
 
-def record_audio(duration=10, threshold=10, silence_threshold=200):
+def record_audio(duration=5, threshold=10, silence_threshold=200):
     """Record audio for a specified duration, or until a pause in speech is detected."""
 
     # Set up audio input stream

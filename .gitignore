@@ -1,3 +1,7 @@
 /animation
 output.wav
 .env
+output*
+venv/*
+__pycache__/*
+```
