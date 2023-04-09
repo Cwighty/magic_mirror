@@ -11,9 +11,6 @@ import pvporcupine
 import pvrecorder
 from audio_service import record_audio, write_audio_to_file
 
-# set the wake word to "mirror"
-wake_word = "mirror"
-
 # specify the keyword path for the English language
 keyword_path = 'src\mirror-mirror_en_windows_v2_1_0.ppn'
 

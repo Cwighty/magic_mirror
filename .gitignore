@@ -2,6 +2,7 @@
 output.wav
 .env
 output*
+audio*
 venv/*
 __pycache__/*
 ```
