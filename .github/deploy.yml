@@ -1,0 +1,25 @@
+name: Clone and Run
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  run-main:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Install Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.10.9"
+
+      - name: Install Dependencies
+        run: pip install -r src/requirements.txt # Replace with the name of your requirements file, if applicable
+
+      - name: Run Main.py
+        run: python src/main.py # Replace with the name of your main.py file
