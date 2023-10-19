@@ -12,7 +12,7 @@ def get_text_to_speech(text):
     :param text: text to convert
     :return: file name of the audio file
     """
-    VOICE = os.environ["VOICE"]
+    VOICE = os.environ["ELEVEN_LAB_VOICE"]
     url = f"https://api.elevenlabs.io/v1/text-to-speech/{VOICE}"
 
     #generate a random file name with date and time 

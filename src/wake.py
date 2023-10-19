@@ -5,18 +5,18 @@ import os
 import pvporcupine
 import pvrecorder
 
-# specify the keyword path for the English language
-keyword_path = 'src\mirror-mirror_en_windows_v2_1_0.ppn'
+keyword_model_path = 'src\mirror-mirror_en_windows_v2_1_0.ppn'
 
-# specify your Picovoice access key
 # initialize Porcupine
 access_key = os.environ["PICO_KEY"]
-handle = pvporcupine.create(keyword_paths=[keyword_path], sensitivities=[0.5], access_key=access_key)
+audio_device_index = int(os.environ["AUDIO_INPUT_DEVICE_INDEX"])
+handle = pvporcupine.create(keyword_paths=[keyword_model_path], sensitivities=[0.5], access_key=access_key)
+
 # initialize PvRecorder
-recorder = pvrecorder.PvRecorder(device_index=0, frame_length=512)
+audio_devices = pvrecorder.PvRecorder.get_audio_devices()
+recorder = pvrecorder.PvRecorder(device_index=-1, frame_length=512) # device_index=-1 for default audio input device
 recorder.start()
 
-# listen for the wake word
 def listen_for_wake(handle_detection):
     pcm = recorder.read()
     keyword_index = handle.process(pcm)

@@ -1,12 +1,11 @@
-# listen for the wake word
+import numpy as np
+import pyqtgraph as pg
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout
 from audio_service import record_audio, write_audio_to_file
 from llm_service import get_ai_response
 from tts_service import get_text_to_speech, play_audio
 from wake import listen_for_wake
 from whisper_service import convert_to_text
-
-
-
 
 # define a function to handle the wake word detection event
 def handle_detection():

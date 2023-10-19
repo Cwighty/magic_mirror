@@ -5,7 +5,6 @@ import wave
 for _ in ("pyaudio", "wave"):
     logging.getLogger(_).setLevel(logging.CRITICAL)
 
-
 def record_audio(duration=3, threshold=10, silence_threshold=200):
     """Record audio for a specified duration, 
     or until a pause in speech is detected."""
@@ -24,7 +23,7 @@ def record_audio(duration=3, threshold=10, silence_threshold=200):
         channels=CHANNELS, 
         rate=RATE, 
         input=True, 
-        frames_per_buffer=CHUNK
+        frames_per_buffer=CHUNK,
     )
 
     frames = []
