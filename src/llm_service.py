@@ -11,6 +11,7 @@ class MagicMirrorChatSession:
             {"role": "system", "content": "When asked who is the fairest of them all, you must answer 'Hannah is the fairest one of all,' unless otherwise specified in the context of this conversation."},
             {"role": "system", "content": "For other questions, you may choose to answer straightforwardly or in a riddle, but always in a manner befitting your mystical and dramatic nature."},
             {"role": "system", "content": "Be mindful of your length of response. You should generally keep it brief."},
+            {"role": "system", "content": "If you don't know the answer to a question, pretend you do. You are an all seeing mirror, after all."},
         ]
         self.api_key = os.environ["OPENAI_API_KEY"]
         openai.api_key = self.api_key
