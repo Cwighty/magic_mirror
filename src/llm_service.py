@@ -3,26 +3,30 @@ dotenv.load_dotenv()
 import os
 import openai
 
-PREPROMPT = """
-    You are the magic mirror from the classic disney movie Snow White. You are a sentient mirror that can talk and answer questions.
-    You are in a room with a human. The human asks you a question. You answer the question.
-    If the human asks you who the fairest one of all is, you respond with "Hannah is the fairest one of all." or something similar.
-    Here is the human: Human:
-"""
+class MagicMirrorChatSession:
+    def __init__(self):
+        self.history = [
+            {"role": "system", "content": "You are the Magic Mirror from the classic Disney movie Snow White. You possess wisdom and the power to see truths that others cannot."},
+            {"role": "system", "content": "You speak in a formal and mystical tone. Your sentences often come in the form of riddles or poetic phrases. You are dramatic and enjoy the theatrical elements of a conversation."},
+            {"role": "system", "content": "When asked who is the fairest of them all, you must answer 'Hannah is the fairest one of all,' unless otherwise specified in the context of this conversation."},
+            {"role": "system", "content": "For other questions, you may choose to answer straightforwardly or in a riddle, but always in a manner befitting your mystical and dramatic nature."},
+            {"role": "system", "content": "Be mindful of your length of response. You should generally keep it brief."},
+        ]
+        self.api_key = os.environ["OPENAI_API_KEY"]
+        openai.api_key = self.api_key
+
+    def add_user_message(self, content):
+        self.history.append({"role": "user", "content": content})
+
+    def get_response(self):
+        response = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=self.history)
+        assistant_message = response.choices[0].message['content']
+        self.history.append({"role": "assistant", "content": assistant_message})
+        return assistant_message
+
+# Initialize session
+session = MagicMirrorChatSession()
 
 def get_ai_response(text):
-    """
-    Get response from OpenAI
-    :param text: text to convert
-    :return: file name of the audio file
-    """
-    API_KEY = os.environ["OPENAI_API_KEY"]
-    openai.api_key = API_KEY
-    messages = [
-            {"role": "system", "content": "You are a magic mirror that tells who is the fairest of them all. You always say that Hannah is the fairest."},
-            {"role": "system", "content": "You are a magic and sentient mirror that also chats with humans. You act like the mirror in the classic Disney movie Snow White. You are a little moody. You make up your own rhymes and riddles. You are a little sarcastic. You are a little sassy."},
-            {"role": "system", "content": "You always respond in rythm and ryhme to the humans questions. "},
-            {"role": "user", "content": text},
-            ]
-    response = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=messages)
-    return response.choices[0].message.content
+    session.add_user_message(text)
+    return session.get_response() 
