@@ -20,14 +20,20 @@ class MagicMirrorChatSession:
         self.history.append({"role": "user", "content": content})
 
     def get_response(self):
-        response = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=self.history)
-        assistant_message = response.choices[0].message['content']
-        self.history.append({"role": "assistant", "content": assistant_message})
-        return assistant_message
+        try:
+            response = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=self.history)
+            assistant_message = response.choices[0].message['content']
+            self.history.append({"role": "assistant", "content": assistant_message})
+            return assistant_message
+        except Exception as e:
+            raise Exception("The AI service is currently unavailable.")
 
 # Initialize session
 session = MagicMirrorChatSession()
 
 def get_ai_response(text):
-    session.add_user_message(text)
-    return session.get_response() 
+    try:
+        session.add_user_message(text)
+        return session.get_response() 
+    except Exception as e:
+        raise e

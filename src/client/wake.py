@@ -14,11 +14,12 @@ handle = pvporcupine.create(keyword_paths=[keyword_model_path], sensitivities=[0
 
 # initialize PvRecorder
 audio_devices = pvrecorder.PvRecorder.get_audio_devices()
-recorder = pvrecorder.PvRecorder(device_index=-1, frame_length=512) # device_index=-1 for default audio input device
+recorder = pvrecorder.PvRecorder(device_index=-1, frame_length=512, log_silence=True) # device_index=-1 for default audio input device
 recorder.start()
 
-def listen_for_wake(handle_detection):
-    pcm = recorder.read()
-    keyword_index = handle.process(pcm)
-    if keyword_index >= 0:
-        handle_detection()
+async def listen_for_wake(handle_detection):
+    while True:
+        pcm = recorder.read()
+        keyword_index = handle.process(pcm)
+        if keyword_index >= 0:
+            await handle_detection()
