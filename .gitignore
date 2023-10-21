@@ -1,9 +1,0 @@
-/animation
-output.wav
-.env
-output*
-audio*
-venv/*
-__pycache__/*
-/assets/*
-```
