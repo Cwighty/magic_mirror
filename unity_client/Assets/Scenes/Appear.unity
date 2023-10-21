@@ -136,6 +136,7 @@ GameObject:
   - component: {fileID: 71053454}
   - component: {fileID: 71053451}
   - component: {fileID: 71053450}
+  - component: {fileID: 71053455}
   m_Layer: 0
   m_Name: LipSyncContext
   m_TagString: Untagged
@@ -201,7 +202,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: f42fe301cace95d4585a1576bc84ee90, type: 3}
+  m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -322,6 +323,19 @@ MonoBehaviour:
   micControl: 2
   micActivationKey: 32
   selectedDevice: 
+--- !u!114 &71053455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 71053449}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 12c6b92ae8af5d847a90fa4f092f511a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioSource: {fileID: 0}
 --- !u!1 &90904170
 GameObject:
   m_ObjectHideFlags: 0

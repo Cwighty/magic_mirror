@@ -1,14 +1,19 @@
-using UnityEngine;
-
 using NativeWebSocket;
+using UnityEngine;
+using System;
+using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class WebSocketUnityClient : MonoBehaviour
 {
     WebSocket websocket;
+    private AudioPlayer audioPlayer;
 
     // Start is called before the first frame update
     async void Start()
     {
+        DontDestroyOnLoad(gameObject);
+
         websocket = new WebSocket("ws://localhost:8765");
 
         websocket.OnOpen += () =>
@@ -28,12 +33,18 @@ public class WebSocketUnityClient : MonoBehaviour
 
         websocket.OnMessage += (bytes) =>
         {
-            Debug.Log("OnMessage!");
-            Debug.Log(bytes);
+            // Try to convert message bytes to UTF-8 string
+            try
+            {
+                var message = System.Text.Encoding.UTF8.GetString(bytes);
+                var status = JsonUtility.FromJson<StatusMessage>(message);
 
-            // getting the message as a string
-            // var message = System.Text.Encoding.UTF8.GetString(bytes);
-            // Debug.Log("OnMessage! " + message);
+                HandleMessage(status);
+            }
+            catch (Exception e)
+            {
+                Debug.Log("Invalid message received! " + e.Message);
+            }
         };
 
         // waiting for messages
@@ -47,17 +58,60 @@ public class WebSocketUnityClient : MonoBehaviour
 #endif
     }
 
-    async void SendWebSocketMessage()
+    void HandleMessage(StatusMessage message)
     {
-        if (websocket.State == WebSocketState.Open)
+        if (message.type == "message")
         {
-            // Sending plain text
-            await websocket.SendText("plain text message");
+            switch (message.data)
+            {
+                case "listening":
+                    Debug.Log("Listening...");
+                    break;
+                case "transcribing":
+                    SceneManager.LoadScene("Appear");
+                    break;
+                case "processing":
+                    Debug.Log("Processing...");
+                    break;
+                default:
+                    Debug.LogWarning("Unknown message");
+                    break;
+            }
         }
+        else if (message.type == "audio")
+        {
+            HandleAudio(message.data);
+        }
+        else
+        {
+            Debug.LogWarning("Unknown message type!");
+        }
+
     }
 
-    private async void OnApplicationQuit()
+    void HandleAudio(string audioData)
     {
-        await websocket.Close();
+        GameObject audioPlayerObject = GameObject.Find("LipSyncContext");  // Replace with the actual name of the GameObject
+        if (audioPlayerObject != null)
+        {
+            audioPlayer = audioPlayerObject.GetComponent<AudioPlayer>();
+            audioPlayer.PlayAudioFromBase64(audioData);
+        }
+        else
+        {
+            Debug.LogError("AudioPlayer GameObject not found.");
+        }
+       
+        async void OnApplicationQuit()
+        {
+            await websocket.Close();
+        }
     }
+}
+
+[Serializable]
+public class StatusMessage
+{
+    public string type;
+    public string data;
 }

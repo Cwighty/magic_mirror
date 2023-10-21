@@ -1,50 +1,44 @@
+using System;
 using System.Collections;
-using UnityEngine;
 using System.IO;
+using UnityEngine;
+using UnityEngine.Networking;
 
 public class AudioPlayer : MonoBehaviour
 {
-    public string folderPath = "Your/Folder/Path/Here"; // Replace with your folder path
     public AudioSource audioSource;
 
     private void Start()
     {
-        audioSource = GetComponent<AudioSource>(); // Get the AudioSource component
-        StartCoroutine(PlayAndDeleteAudio());
+        audioSource = GetComponent<AudioSource>();
     }
 
-    private IEnumerator PlayAndDeleteAudio()
+    public void PlayAudioFromBase64(string base64EncodedString)
     {
-        string[] files = Directory.GetFiles(folderPath, "*.mp3");
+        byte[] mp3Bytes = System.Convert.FromBase64String(base64EncodedString);
+        string tempFile = Path.Combine(Application.temporaryCachePath, "temp.mp3");
+        File.WriteAllBytes(tempFile, mp3Bytes);
+        StartCoroutine(PlayMP3(tempFile));
+    }
 
-        if (files.Length > 0)
+    private IEnumerator PlayMP3(string filePath)
+    {
+        using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip("file://" + filePath, AudioType.MPEG))
         {
-            string filePath = files[0]; // Take the first file found
-
-            // Load audio clip from the file path
-            WWW www = new WWW("file://" + filePath);
-            yield return www;
-            AudioClip clip = www.GetAudioClip();
-
-            if (clip != null)
+            yield return www.SendWebRequest();
+            if (www.result == UnityWebRequest.Result.Success)
             {
+                AudioClip clip = DownloadHandlerAudioClip.GetContent(www);
                 audioSource.clip = clip;
                 audioSource.Play();
-
-                // Wait until the audio has finished playing
-                yield return new WaitForSeconds(clip.length);
-
-                // Delete the file
-                File.Delete(filePath);
             }
             else
             {
-                Debug.LogError("Could not load audio clip.");
+                Debug.LogError("Failed to load MP3: " + www.error);
             }
         }
-        else
-        {
-            Debug.LogWarning("No audio files found in the folder.");
-        }
+        File.Delete(filePath);  // Optionally, delete the temp file after loading
     }
+
 }
+

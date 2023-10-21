@@ -1,4 +1,6 @@
 import asyncio
+import json
+import base64
 import websockets
 import numpy as np
 import pyqtgraph as pg
@@ -9,32 +11,39 @@ from tts_service import get_text_to_speech, play_audio
 from wake import listen_for_wake
 from whisper_service import convert_to_text
 
-
 async def notify_server(websocket, message):
-    await websocket.send(message)
+    json_string = json.dumps(message)
+    await websocket.send(json_string)
 
 async def handle_detection():
     uri = "ws://localhost:8765"
     async with websockets.connect(uri) as websocket:
-        await notify_server(websocket, "listening")
-        print("Keyword detected!")
+        await notify_server(websocket, {"type": "message", "data": "listening"})
+        print("keyword detected!")
         frames, rate = record_audio()
         write_audio_to_file(frames, rate, "output.wav")
         
-        await notify_server(websocket, "transcribing")
-        print("Transcribing audio...")
+        await notify_server(websocket, {"type": "message", "data": "transcribing"})
+        print("transcribing audio...")
         audio_file = open("output.wav", "rb")
         text = convert_to_text(audio_file)
-        print("Transcription:", text)
+        print("transcription:", text)
 
-        await notify_server(websocket, "processing")
+        await notify_server(websocket, {"type": "message", "data": "processing"})
         try:
             ai_res = get_ai_response(text)
             tts_audio_file = get_text_to_speech(ai_res)
         except Exception as e:
-            tts_audio_file = "ChatServiceUnavailable.mp3"
+            print("Error:", e)
+            tts_audio_file = "chatserviceunavailable.mp3"
 
-        await notify_server(websocket, "processed " + tts_audio_file)
+        # Read audio file
+        with open(tts_audio_file, "rb") as f:
+            audio_data = f.read()
+            audio_base64 = base64.b64encode(audio_data).decode('utf-8')
+
+        # Send audio bytes
+        await notify_server(websocket, {"type": "audio", "data": audio_base64})
 
 
 async def main():
