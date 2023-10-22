@@ -3,19 +3,32 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
+using System.Diagnostics;
+using Debug = UnityEngine.Debug;
+using System.Collections;
 
 public class WebSocketUnityClient : MonoBehaviour
 {
     WebSocket websocket;
     private AudioPlayer audioPlayer;
 
+    public AudioClip windClip;
+    public AudioSource windAudioSource;
+
+    public ParticleSystem fireParticles;
+    public AudioSource fireAudioSource;
+    public AudioClip fireClip;
+
+    public float windFadeOutDuration = 2.0f;  // Duration in seconds for the audio to fade out
+    private bool windIsFadingOut = false;
+
     // Start is called before the first frame update
     async void Start()
     {
         DontDestroyOnLoad(gameObject);
+        SceneManager.sceneLoaded += OnSceneLoaded;
 
         websocket = new WebSocket("ws://localhost:8765");
-
         websocket.OnOpen += () =>
         {
             Debug.Log("Connection open!");
@@ -51,6 +64,14 @@ public class WebSocketUnityClient : MonoBehaviour
         await websocket.Connect();
     }
 
+    private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
+    {
+        if (windAudioSource.isPlaying && !windIsFadingOut)
+        {
+            StartCoroutine(FadeOutAudio());
+        }
+    }
+
     void Update()
     {
 #if !UNITY_WEBGL || UNITY_EDITOR
@@ -66,9 +87,10 @@ public class WebSocketUnityClient : MonoBehaviour
             {
                 case "listening":
                     Debug.Log("Listening...");
+                    HandleListening();
                     break;
                 case "transcribing":
-                    SceneManager.LoadScene("Appear");
+                    HandleTranscribing();
                     break;
                 case "processing":
                     Debug.Log("Processing...");
@@ -80,7 +102,7 @@ public class WebSocketUnityClient : MonoBehaviour
         }
         else if (message.type == "audio")
         {
-            HandleAudio(message.data);
+            StartCoroutine(WaitAndPlayTtsResponse(message.data));
         }
         else
         {
@@ -89,9 +111,11 @@ public class WebSocketUnityClient : MonoBehaviour
 
     }
 
-    void HandleAudio(string audioData)
+    IEnumerator WaitAndPlayTtsResponse(string audioData)
     {
-        GameObject audioPlayerObject = GameObject.Find("LipSyncContext");  // Replace with the actual name of the GameObject
+        yield return new WaitForSeconds(3);  // Wait for 1 second
+
+        GameObject audioPlayerObject = GameObject.Find("LipSyncContext");
         if (audioPlayerObject != null)
         {
             audioPlayer = audioPlayerObject.GetComponent<AudioPlayer>();
@@ -101,11 +125,70 @@ public class WebSocketUnityClient : MonoBehaviour
         {
             Debug.LogError("AudioPlayer GameObject not found.");
         }
-       
-        async void OnApplicationQuit()
+    }
+
+    void HandleListening()
+    {
+        if (SceneManager.GetActiveScene().name == "Nothing")
         {
-            await websocket.Close();
+            // Play the audio clip
+            if (!windAudioSource.isPlaying) // Check to ensure it doesn't restart if already playing
+            {
+                windAudioSource.clip = windClip;
+                windAudioSource.Play();
+                DontDestroyOnLoad(windAudioSource);
+            }
         }
+    }
+    
+    void HandleTranscribing()
+    {
+        if (SceneManager.GetActiveScene().name == "Nothing")
+        {
+            if (!fireAudioSource.isPlaying)            {
+                fireAudioSource.clip = fireClip;
+                fireAudioSource.Play();
+                DontDestroyOnLoad(fireAudioSource);
+            }
+            if (!fireParticles.isPlaying)
+            {
+                fireParticles.Play();
+            }
+
+            StartCoroutine(WaitAndChangeScene());
+        }
+        else
+        {
+            GameObject audioPlayerObject = GameObject.Find("LipSyncContext");
+            if (audioPlayerObject != null)
+            {
+                audioPlayer = audioPlayerObject.GetComponent<AudioPlayer>();
+                audioPlayer.PlayRandomQuickResponse();
+            }
+        }
+    }
+    IEnumerator WaitAndChangeScene()
+    {
+        yield return new WaitForSeconds(3);  // Wait for 3 seconds
+
+        SceneManager.LoadScene("Appear");
+    }
+
+    IEnumerator FadeOutAudio()
+    {
+        windIsFadingOut = true;
+        float startVolume = windAudioSource.volume;
+
+        while (windAudioSource.volume > 0)
+        {
+            windAudioSource.volume -= startVolume * Time.deltaTime / windFadeOutDuration;
+            yield return null;
+        }
+
+        windAudioSource.Stop();
+        windAudioSource.volume = startVolume;
+
+        Destroy(windAudioSource);
     }
 }
 

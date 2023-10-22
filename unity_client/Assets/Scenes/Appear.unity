@@ -336,6 +336,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioSource: {fileID: 0}
+  quickResponses:
+  - {fileID: 8300000, guid: e5021f7d887a01a429e1df0f17ce4443, type: 3}
+  - {fileID: 8300000, guid: a4a0314c6cea2014abe6faaedfe96ad4, type: 3}
+  - {fileID: 8300000, guid: cd58a3ffa72d7be41b72bff375124d75, type: 3}
+  - {fileID: 8300000, guid: f07cbf2929b62da4bbac473e3fd75ed4, type: 3}
+  - {fileID: 8300000, guid: 217495ca2ed6e094b95f4ab25c59b22a, type: 3}
+  - {fileID: 8300000, guid: 29a44f61875d73b4391f8a1b78316c85, type: 3}
+  - {fileID: 8300000, guid: 2e651a896532372479987432e1b763dd, type: 3}
+  - {fileID: 8300000, guid: deff931c59a2b584f95138968d9d17e8, type: 3}
+  - {fileID: 8300000, guid: 796db176472bf3345b47cc0411de6a69, type: 3}
 --- !u!1 &90904170
 GameObject:
   m_ObjectHideFlags: 0
@@ -363,7 +373,7 @@ Transform:
   m_GameObject: {fileID: 90904170}
   serializedVersion: 2
   m_LocalRotation: {x: -0.49908587, y: 0.5009125, z: 0.50091225, w: 0.4990862}
-  m_LocalPosition: {x: -1.782, y: -0.883, z: -9.411}
+  m_LocalPosition: {x: -1.786, y: -0.883, z: -10.556}
   m_LocalScale: {x: 0.1378037, y: 0.13379, z: 0.13379}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5699,7 +5709,7 @@ Transform:
   m_GameObject: {fileID: 1473865002}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.95, y: 3.554, z: -10.25}
+  m_LocalPosition: {x: 1.726, y: 3.554, z: -10.747}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

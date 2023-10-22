@@ -7,6 +7,7 @@ using UnityEngine.Networking;
 public class AudioPlayer : MonoBehaviour
 {
     public AudioSource audioSource;
+    public AudioClip[] quickResponses;
 
     private void Start()
     {
@@ -19,6 +20,15 @@ public class AudioPlayer : MonoBehaviour
         string tempFile = Path.Combine(Application.temporaryCachePath, "temp.mp3");
         File.WriteAllBytes(tempFile, mp3Bytes);
         StartCoroutine(PlayMP3(tempFile));
+    }
+
+    public void PlayRandomQuickResponse()
+    {
+        if (quickResponses.Length == 0) return;  // Ensure there are audio clips to choose from
+
+        int randomIndex = UnityEngine.Random.Range(0, quickResponses.Length);  // Get a random index
+        audioSource.clip = quickResponses[randomIndex];  // Assign the random audio clip to the audio source
+        audioSource.Play();  // Play the audio source
     }
 
     private IEnumerator PlayMP3(string filePath)
