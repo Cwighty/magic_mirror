@@ -2,10 +2,7 @@ import asyncio
 import json
 import base64
 import websockets
-import numpy as np
-import pyqtgraph as pg
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout
-from audio_service import record_audio, write_audio_to_file
+from audio_service import get_users_audio_response, write_audio_to_file
 from llm_service import get_ai_response
 from tts_service import get_text_to_speech, play_audio
 from wake import listen_for_wake
@@ -20,7 +17,7 @@ async def handle_detection():
     async with websockets.connect(uri) as websocket:
         await notify_server(websocket, {"type": "message", "data": "listening"})
         print("keyword detected!")
-        frames, rate = record_audio()
+        frames, rate = get_users_audio_response()
         write_audio_to_file(frames, rate, "output.wav")
         
         await notify_server(websocket, {"type": "message", "data": "transcribing"})

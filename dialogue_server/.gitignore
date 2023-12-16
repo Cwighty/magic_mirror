@@ -3,6 +3,7 @@ output.wav
 .env
 output*
 audio*
+.venv/*
 venv/*
 */__pycache__/*
 /assets/*
