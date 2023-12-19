@@ -6,7 +6,7 @@ import pvporcupine
 import pvrecorder
 import asyncio
 
-keyword_model_path = "src/mirror-mirror_en_windows_v3_0_0.ppn"
+keyword_model_path = "mirror-mirror_en_windows_v3_0_0.ppn"
 
 # initialize Porcupine
 access_key = os.environ["PICO_KEY"]

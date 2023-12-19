@@ -3,6 +3,7 @@ import json
 import base64
 import websockets
 import cv2
+from deepface import DeepFace
 
 
 async def notify_server(websocket, message):
@@ -41,10 +42,27 @@ async def face_tracking():
 
             # Get the angle of the face
             angle = get_face_angle(gray, face_cascade)
-            print("angle:", angle)
+
+            # Detect facial expression
+            faces = face_cascade.detectMultiScale(gray, 1.1, 4)
+            for x, y, w, h in faces:
+                roi_gray = gray[y : y + h, x : x + w]
+                roi_color = cv2.cvtColor(roi_gray, cv2.COLOR_GRAY2BGR)
+                result = DeepFace.analyze(
+                    roi_color, actions=["emotion"], enforce_detection=False
+                )
+
+            dominant_emotion = result[0]["dominant_emotion"]
 
             if angle is not None:
-                await notify_server(websocket, {"type": "face_angle", "data": angle})
+                print("angle:", angle, "emotion:", dominant_emotion)
+                await notify_server(
+                    websocket,
+                    {
+                        "type": "face_data",
+                        "data": {"angle": angle, "emotion": dominant_emotion},
+                    },
+                )
 
             # Display the resulting frame
             cv2.imshow("frame", gray)
