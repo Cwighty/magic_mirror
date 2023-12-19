@@ -8,9 +8,11 @@ from tts_service import get_text_to_speech, play_audio
 from wake import listen_for_wake
 from whisper_service import convert_to_text
 
+
 async def notify_server(websocket, message):
     json_string = json.dumps(message)
     await websocket.send(json_string)
+
 
 async def handle_detection():
     uri = "ws://localhost:8765"
@@ -19,7 +21,7 @@ async def handle_detection():
         print("keyword detected!")
         frames, rate = get_users_audio_response()
         write_audio_to_file(frames, rate, "output.wav")
-        
+
         await notify_server(websocket, {"type": "message", "data": "transcribing"})
         print("transcribing audio...")
         audio_file = open("output.wav", "rb")
@@ -37,7 +39,7 @@ async def handle_detection():
         # Read audio file
         with open(tts_audio_file, "rb") as f:
             audio_data = f.read()
-            audio_base64 = base64.b64encode(audio_data).decode('utf-8')
+            audio_base64 = base64.b64encode(audio_data).decode("utf-8")
 
         # Send audio bytes
         await notify_server(websocket, {"type": "audio", "data": audio_base64})

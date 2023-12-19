@@ -4,8 +4,9 @@ dotenv.load_dotenv()
 import os
 import pvporcupine
 import pvrecorder
+import asyncio
 
-keyword_model_path = "src\mirror-mirror_en_windows_v3_0_0.ppn"
+keyword_model_path = "src/mirror-mirror_en_windows_v3_0_0.ppn"
 
 # initialize Porcupine
 access_key = os.environ["PICO_KEY"]
@@ -28,3 +29,4 @@ async def listen_for_wake(handle_detection):
         keyword_index = handle.process(pcm)
         if keyword_index >= 0:
             await handle_detection()
+        await asyncio.sleep(0)
