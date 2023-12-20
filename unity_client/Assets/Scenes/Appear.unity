@@ -5503,7 +5503,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2498e2968dc46ce4081d4692fbf68843, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2498e2968dc46ce4081d4692fbf68843, type: 3}
       propertyPath: m_LocalRotation.y
@@ -5612,6 +5612,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 2498e2968dc46ce4081d4692fbf68843, type: 3}
       propertyPath: m_Name
       value: Mask_Viseme
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 2498e2968dc46ce4081d4692fbf68843, type: 3}
+      propertyPath: m_TagString
+      value: Mask
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

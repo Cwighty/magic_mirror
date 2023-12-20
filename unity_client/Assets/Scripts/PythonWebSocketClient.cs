@@ -104,6 +104,10 @@ public class WebSocketUnityClient : MonoBehaviour
         {
             StartCoroutine(WaitAndPlayTtsResponse(message.data));
         }
+        else if (message.type == "face_data")
+        {
+            HandleFaceData(message.data);
+        }
         else
         {
             Debug.LogWarning("Unknown message type!");
@@ -167,6 +171,40 @@ public class WebSocketUnityClient : MonoBehaviour
             }
         }
     }
+
+    void HandleFaceData(string jsonData)
+    {
+        FaceData faceData = JsonUtility.FromJson<FaceData>(jsonData);
+
+        GameObject maskObject = null;
+        try
+        {
+             maskObject = GameObject.FindGameObjectWithTag("Mask");
+        }
+        catch
+        {
+            Debug.LogWarning("Mask GameObject not found.");
+        }
+        if (maskObject != null)
+        {
+            // Now use faceData.angle to rotate the mask
+            RotateMask(maskObject, faceData.angle);
+        }
+    }
+
+    void RotateMask(GameObject maskObject, float yAngle)
+    {
+        // Adjust the angle so that 0 becomes 180, positive angles turn left, and negative angles turn right
+        float adjustedAngle = 180 - yAngle;
+
+        // Create a new rotation quaternion based on the adjusted angle
+        Quaternion newRotation = Quaternion.Euler(0, adjustedAngle, 0);
+
+        // Apply a smooth rotation to the mask object
+        maskObject.transform.rotation = Quaternion.Slerp(maskObject.transform.rotation, newRotation, Time.deltaTime);
+    }
+
+
     IEnumerator WaitAndChangeScene()
     {
         yield return new WaitForSeconds(3);  // Wait for 3 seconds
@@ -197,4 +235,12 @@ public class StatusMessage
 {
     public string type;
     public string data;
+}
+
+
+[Serializable]
+public class FaceData
+{
+    public float angle;
+    public string emotion;
 }
